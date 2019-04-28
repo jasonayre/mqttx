@@ -1,6 +1,6 @@
 ### A more RabbitMQ like, Multiplexed, MQTT javascript implementation
 
-This library wraps mqttjs, and adds syntactic/operability sugar on top of it, and multiplexes the topic subscriptions so each topic can respond with specific behavior. The main issue it solves is the following use case, which is a very common use case in topic based messaging so I was surprised to find out that MQTT doesn't seem to support it.
+This library wraps mqttjs, and adds syntactic/operability sugar on top of it, and multiplexes the topic subscriptions so each topic can be called with specific behavior. The main issue it solves is the following use case, which is a very common use case in topic based messaging so I was surprised to find out that MQTT doesn't seem to support it.
 
 ### Take the following use case, which caused me to create this library.
 
@@ -41,7 +41,6 @@ Note, ATM, doesn't support wildcard routing as it's not something I am using, ho
 Connect will proxy a connection over to the underlying MQTT library, so all the options which apply there apply here as well. Just call `MQTTX.connect(params)`
 
 You can access the connection afterwards at `MQTTX.client`
-
 
 ### Subscriptions
 

@@ -1,7 +1,5 @@
 import {assign, get, isFunction} from 'lodash';
 import mqtt from 'mqtt';
-// import MqttBrowser from './mqtt_browser';
-
 import {SubscriptionManager} from './subscription_manager';
 import {waitUntilCondition} from './helpers';
 import {Serialization} from './serialization';
