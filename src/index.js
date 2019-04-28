@@ -1,4 +1,6 @@
 import {MQTTX} from './mqttx';
-// export const SomethingElse = new Something();
-// export {Something};
-export {MQTTX};
+import * as Helpers from './helpers';
+import {Subscription} from './subscription';
+import {Serialization} from './serialization';
+
+export {MQTTX, Helpers, Subscription, Serialization};
