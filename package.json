@@ -1,6 +1,6 @@
 {
   "name": "mqttx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MQTT but with >1 callbacks, more rabbit like, and more",
   "main": "index.js",
   "files": [
