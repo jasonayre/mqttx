@@ -1,4 +1,7 @@
-import {assign, invokeMap, some} from 'lodash';
+// import {assign, invokeMap, some} from 'lodash';
+import assign from 'lodash/assign';
+import invokeMap from 'lodash/invokeMap';
+import some from 'lodash/some';
 import {Serialization} from './serialization';
 
 export class Subscription {

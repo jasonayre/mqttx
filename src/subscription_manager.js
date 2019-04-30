@@ -1,4 +1,4 @@
-import {invokeMap} from 'lodash';
+import invokeMap from 'lodash/invokeMap';
 import {Subscription} from './subscription';
 
 export class SubscriptionManager {

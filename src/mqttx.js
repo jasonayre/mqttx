@@ -1,4 +1,4 @@
-import {assign, get, isFunction} from 'lodash';
+import get from 'lodash/get';
 import mqtt from 'mqtt';
 import {SubscriptionManager} from './subscription_manager';
 import {waitUntilCondition} from './helpers';
@@ -31,7 +31,6 @@ export class MQTTX {
       this.client.publish(topic, Serialization.serialize(data), {qos, ...options});
     }
   }
-
 
   //for basic rpc like functionality, note I don't condone using this, although I have
   // the need to do so in a project of mine. Basically only use if absolutely necessary
