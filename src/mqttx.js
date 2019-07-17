@@ -24,11 +24,11 @@ export class MQTTX {
     return subscription;
   }
 
-  static publish(topic, data, {as_json=true, qos=1, ...options}={}) {
-    if(as_json) {
-      this.client.publish(topic, Serialization.serialize(data), {qos, ...options});
+  static publish(topic, data, {serialize=true, qos=1, callback, ...options}={}) {
+    if(serialize) {
+      this.client.publish(topic, Serialization.serialize(data), {qos, ...options}, callback);
     } else {
-      this.client.publish(topic, Serialization.serialize(data), {qos, ...options});
+      this.client.publish(topic, data, {qos, ...options}, callback);
     }
   }
 
