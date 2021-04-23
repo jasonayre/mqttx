@@ -2,9 +2,10 @@ import invokeMap from 'lodash/invokeMap';
 import {Subscription} from './subscription';
 
 export class SubscriptionManager {
-  constructor(mqttx) {
+  constructor(mqttx, client) {
     this.subscriptions = [];
     this.mqttx = mqttx;
+    this.client = client;
     this._initializeMainSubscription();
   }
 
@@ -12,6 +13,18 @@ export class SubscriptionManager {
     this.mqttx.client.on('message', (topic, message, packet) => {
       this.notifySubscriptions(message, topic, packet);
     })
+  }
+
+  on(topic, callback=(msg) => { console.log(msg) }, {connection=this, ...options}={}) {
+    return this.mqttx.on(topic, callback, {connection, ...options});
+  }
+
+  // publish(...args) {
+  //   return this.client.publish(...args);
+  // }
+
+  publish(topic, data, {connection=this, ...options}={}) {
+    return this.mqttx.publish(topic, data, {connection, ...options});
   }
 
   subscribe(topic, callback=() => { }, {is_one_time=false, onBeforeDispose}={}) {

@@ -14,21 +14,24 @@ if((typeof process !== 'undefined') && (get(process, 'release.name') === 'node')
 export class MQTTX {
   static connect(...args) {
     this.mqtt = mqtt;
-    this.client = mqtt.connect(...args);
-    this.subscription_manager = new SubscriptionManager(this);
+    let client = mqtt.connect(...args);
+    this.client = client;
+    this.connection = new SubscriptionManager(this, client);
+    this.connections.push(this.connection);
+    return this.connection;
   }
 
-  static on(topic, callback=(msg) => { console.log(msg) }, {qos=1, retain=false, ...options}={}) {
-    let subscription = this.subscription_manager.subscribe(topic, callback, {...options});
-    this.client.subscribe(topic, callback, {qos, ...options});
+  static on(topic, callback=(msg) => { console.log(msg) }, {connection=this.connection, qos=1, retain=false, ...options}={}) {
+    let subscription = connection.subscribe(topic, callback, {...options});
+    connection.client.subscribe(topic, callback, {qos, ...options});
     return subscription;
   }
 
-  static publish(topic, data, {serialize=true, qos=1, callback, ...options}={}) {
+  static publish(topic, data, {connection=this.connection, serialize=true, qos=1, callback, ...options}={}) {
     if(serialize) {
-      this.client.publish(topic, Serialization.serialize(data), {qos, ...options}, callback);
+      connection.client.publish(topic, Serialization.serialize(data), {qos, ...options}, callback);
     } else {
-      this.client.publish(topic, data, {qos, ...options}, callback);
+      connection.client.publish(topic, data, {qos, ...options}, callback);
     }
   }
 
@@ -36,7 +39,7 @@ export class MQTTX {
   // the need to do so in a project of mine. Basically only use if absolutely necessary
   // and ONLY if the topic is completely unique.
   // and make sure the server calls response method before request method here
-  static async request(topic, data={}, {publish_params={}, qos=1, retain=false, interval=50, max_attempts=5, is_one_time=true, ...options}={}) {
+  static async request(topic, data={}, {publish_params={}, qos=1, retain=false, interval=50, max_attempts=5, is_one_time=true, connection=this.connection, ...options}={}) {
     let response_topic = `${topic}/response`;
     let request_topic = `${topic}/request`;
     let response;
@@ -45,26 +48,28 @@ export class MQTTX {
       return response;
     }
 
-    let subscription = this.on(response_topic, _callback, {qos, retain, is_one_time, ...options});
-    this.publish(request_topic, data, {...publish_params});
+    let subscription = this.on(response_topic, _callback, {connection, qos, retain, is_one_time, ...options});
+    this.publish(request_topic, data, {connection, ...publish_params});
     let response_data = await waitUntilCondition({condition: () => { return subscription.is_disposed }, returnValue: () => { return response }});
     return response_data;
   }
 
-  static async respondsTo(topic, callback=() => {}, {publish_params={}, qos=1, retain=false, interval=50, max_attempts=5, ...options}={}) {
+  static async respondsTo(topic, callback=() => {}, {publish_params={}, connection=this.connection, qos=1, retain=false, interval=50, max_attempts=5, ...options}={}) {
     let response_topic = `${topic}/response`;
     let request_topic = `${topic}/request`;
     let response;
 
     const callbackAndPublish = (message) => {
       let response = callback(message);
-      this.publish(response_topic, response, publish_params);
+      this.publish(response_topic, response, {connection, publish_params});
     }
 
-    return this.on(request_topic, callbackAndPublish, {qos, retain, ...options});
+    return this.on(request_topic, callbackAndPublish, {connection, qos, retain, ...options});
   }
 
   static clear() {
-    this.subscription_manager.clear();
+    this.connection.clear();
   }
 }
+
+MQTTX.connections = [];

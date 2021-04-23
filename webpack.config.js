@@ -1,5 +1,5 @@
 const nodeExternals = require('webpack-node-externals');
-module.exports = {
+const MainBuild = {
   module: {
     rules: [
       { parser: { amd: false } }
@@ -8,14 +8,7 @@ module.exports = {
   resolve: {
   },
   externals: [
-    nodeExternals(),
-    {
-      lodash : {
-        commonjs: 'lodash',
-        amd: 'lodash',
-        root: 'mqttxlodash' // indicates global variable
-      }
-    }
+    nodeExternals({allowlist: [/^lodash/]})
   ],
   output: {
     library: 'mqttx',
@@ -23,7 +16,29 @@ module.exports = {
     filename: 'index.js',
     path: __dirname,
     globalObject: '(this)'
-  },
-
-
+  }
 };
+
+const Es6Build =  {
+  module: {
+    rules: [
+      { parser: { amd: false } }
+    ]
+  },
+  resolve: {
+  },
+  externals: [
+    nodeExternals({allowlist: [/^lodash/]})
+  ],
+  output: {
+    library: 'mqttx',
+    libraryTarget: 'amd',
+    filename: 'mqttx.js',
+    path: __dirname + '/dist',
+    // globalObject: '(this)'
+  }
+};
+
+const Builds = [MainBuild, Es6Build]
+
+module.exports = [...Builds];

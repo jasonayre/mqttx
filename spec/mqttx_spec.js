@@ -25,13 +25,13 @@ describe('MQTTX', function() {
         response = message;
       })
 
-      expect(MQTTX.subscription_manager.subscriptions.length).toEqual(1);
+      expect(MQTTX.connection.subscriptions.length).toEqual(1);
 
       await sleep(300);
       MQTTX.client.publish("mqttx/some/fake/topic/one", JSON.stringify(expected_message));
       await sleep(300);
       MQTTX.clear();
-      expect(MQTTX.subscription_manager.subscriptions.length).toEqual(0);
+      expect(MQTTX.connection.subscriptions.length).toEqual(0);
       expect(response).toEqual(expected_message);
     })
   })
